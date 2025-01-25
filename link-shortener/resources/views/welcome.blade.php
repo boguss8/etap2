@@ -10,15 +10,9 @@
         <div class="container mx-auto px-4">
             <h1 class="text-3xl font-bold text-center my-8">URL Shortener</h1>
             <div id="app">
-                <create-link-form></create-link-form>
+                <create-link-form @link-created="$refs.linksList.fetchLinks()"></create-link-form>
+                <links-list ref="linksList"></links-list>
             </div>
         </div>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                console.log('Page loaded');
-                console.log('App element:', document.getElementById('app'));
-            });
-        </script>
     </body>
 </html>

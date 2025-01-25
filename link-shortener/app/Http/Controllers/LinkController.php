@@ -25,4 +25,18 @@ class LinkController extends Controller
         $link = Link::where('short_url', $shortUrl)->firstOrFail();
         return redirect()->away($link->original_url);
     }
+
+    public function index()
+    {
+        $links = Link::latest()->get()->map(function ($link) {
+            return [
+                'id' => $link->id,
+                'original_url' => $link->original_url,
+                'short_url' => url($link->short_url),
+                'created_at' => $link->created_at->diffForHumans()
+            ];
+        });
+
+        return response()->json($links);
+    }
 }

@@ -45,6 +45,7 @@ export default {
                 this.shortUrl = response.data.short_url;
                 this.error = '';
                 this.url = '';
+                this.$emit('link-created');
             } catch (error) {
                 this.error = error.response.data.message || 'An error occurred';
             }
