@@ -40,6 +40,7 @@
         <div id="book-modal" class="modal">
           <div class="modal-content">
             <form id="book-form">
+              <input type="hidden" name="bookId" />
               <input type="text" name="title" placeholder="Title" required />
               <input type="text" name="author" placeholder="Author" required />
               <input type="number" name="year" placeholder="Year" required />
@@ -53,6 +54,7 @@
         <div id="review-modal" class="modal">
           <div class="modal-content">
             <form id="review-form">
+              <input type="hidden" name="reviewId" />
               <input type="hidden" name="bookId" />
               <input
                 type="text"

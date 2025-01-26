@@ -59,4 +59,74 @@ class ApiService {
       throw error;
     }
   }
+
+  async updateReview(id, reviewData) {
+    try {
+      const response = await fetch(`${this.baseUrl}/reviews/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(reviewData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteReview(id) {
+    try {
+      const response = await fetch(`${this.baseUrl}/reviews/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateBook(id, bookData) {
+    try {
+      const response = await fetch(`${this.baseUrl}/books/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(bookData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteBook(id) {
+    try {
+      const response = await fetch(`${this.baseUrl}/books/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
 }

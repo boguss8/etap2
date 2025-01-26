@@ -13,17 +13,17 @@ class Book {
 
   async save(book) {
     if (book.id) {
-      return await this.db.run(
+      await this.db.run(
         "UPDATE books SET title = ?, author = ?, year = ?, description = ? WHERE id = ?",
         [book.title, book.author, book.year, book.description, book.id]
       );
-    } else {
-      const result = await this.db.run(
-        "INSERT INTO books (title, author, year, description) VALUES (?, ?, ?, ?)",
-        [book.title, book.author, book.year, book.description]
-      );
-      return await this.findById(result.id);
+      return await this.findById(book.id);
     }
+    const result = await this.db.run(
+      "INSERT INTO books (title, author, year, description) VALUES (?, ?, ?, ?)",
+      [book.title, book.author, book.year, book.description]
+    );
+    return await this.findById(result.id);
   }
 
   async delete(id) {

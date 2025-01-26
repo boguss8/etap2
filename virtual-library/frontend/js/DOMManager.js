@@ -24,16 +24,34 @@ class DOMManager {
         e.preventDefault();
         try {
           const formData = new FormData(e.target);
-          const bookData = Object.fromEntries(formData.entries());
-          bookData.year = parseInt(bookData.year, 10);
-          const newBook = await this.api.createBook(bookData);
-          const books = [...this.state.get("books"), newBook];
-          this.state.set("books", books);
+          const bookData = {
+            title: formData.get("title").trim(),
+            author: formData.get("author").trim(),
+            year: parseInt(formData.get("year"), 10),
+            description: formData.get("description")?.trim() || "",
+          };
+
+          let newBook;
+          const bookId = formData.get("bookId");
+
+          if (bookId) {
+            newBook = await this.api.updateBook(bookId, bookData);
+            if (!newBook) throw new Error("Failed to update book");
+
+            const books = this.state
+              .get("books")
+              .map((book) => (book.id === parseInt(bookId) ? newBook : book));
+            this.state.set("books", books);
+          } else {
+            newBook = await this.api.createBook(bookData);
+            const books = [...this.state.get("books"), newBook];
+            this.state.set("books", books);
+          }
+
           this.hideModal("book-modal");
           e.target.reset();
         } catch (error) {
-          console.error("Error creating book:", error);
-          alert("Failed to create book. Please try again.");
+          alert(`Failed to save book: ${error.message}`);
         }
       });
     document.querySelectorAll(".close-modal").forEach((button) => {
@@ -82,14 +100,32 @@ class DOMManager {
           ) {
             throw new Error("Please fill in all fields");
           }
-          const newReview = await this.api.createReview(reviewData);
-          const reviews = [...this.state.get("currentBookReviews"), newReview];
-          this.state.set("currentBookReviews", reviews);
+
+          let newReview;
+          const reviewId = formData.get("reviewId");
+
+          if (reviewId) {
+            newReview = await this.api.updateReview(reviewId, reviewData);
+            const reviews = this.state
+              .get("currentBookReviews")
+              .map((review) =>
+                review.id === parseInt(reviewId) ? newReview : review
+              );
+            this.state.set("currentBookReviews", reviews);
+          } else {
+            newReview = await this.api.createReview(reviewData);
+            const reviews = [
+              ...this.state.get("currentBookReviews"),
+              newReview,
+            ];
+            this.state.set("currentBookReviews", reviews);
+          }
+
           this.hideModal("review-modal");
           this.showModal("reviews-section");
           e.target.reset();
         } catch (error) {
-          alert(`Failed to create review: ${error.message}`);
+          alert(`Failed to save review: ${error.message}`);
         }
       });
   }
@@ -113,9 +149,19 @@ class DOMManager {
                 <p>By: ${book.author}</p>
                 <p>Year: ${book.year}</p>
                 ${book.description ? `<p>${book.description}</p>` : ""}
-                <button onclick="domManager.showReviews(${
-                  book.id
-                })">Show Reviews</button>
+                <div class="book-actions">
+                    <button onclick="domManager.showReviews(${
+                      book.id
+                    })">Show Reviews</button>
+                    <button onclick="domManager.editBook(${JSON.stringify(
+                      book
+                    ).replace(/"/g, "&quot;")})">
+                        Edit
+                    </button>
+                    <button onclick="domManager.deleteBook(${book.id})">
+                        Delete
+                    </button>
+                </div>
             </div>
         `
       )
@@ -139,6 +185,16 @@ class DOMManager {
         )}</div>
                 <p>${review.content}</p>
                 <small>By: ${review.user_name}</small>
+                <div class="review-actions">
+                  <button onclick="domManager.editReview(${JSON.stringify(
+                    review
+                  ).replace(/"/g, "&quot;")})">
+                    Edit
+                  </button>
+                  <button onclick="domManager.deleteReview(${review.id})">
+                    Delete
+                  </button>
+                </div>
             </div>
         `
       )
@@ -153,6 +209,61 @@ class DOMManager {
     } catch (error) {
       console.error("Error fetching reviews:", error);
       alert("Failed to load reviews");
+    }
+  }
+
+  async editReview(review) {
+    const form = document.getElementById("review-form");
+    form.elements["reviewId"].value = review.id;
+    form.elements["bookId"].value = review.book_id;
+    form.elements["reviewer"].value = review.user_name;
+    form.elements["rating"].value = review.rating;
+    form.elements["content"].value = review.content;
+
+    this.hideModal("reviews-section");
+    this.showModal("review-modal");
+  }
+
+  async deleteReview(reviewId) {
+    if (confirm("Are you sure you want to delete this review?")) {
+      try {
+        await this.api.deleteReview(reviewId);
+        const reviews = this.state
+          .get("currentBookReviews")
+          .filter((review) => review.id !== reviewId);
+        this.state.set("currentBookReviews", reviews);
+      } catch (error) {
+        alert(`Failed to delete review: ${error.message}`);
+      }
+    }
+  }
+
+  async editBook(book) {
+    const form = document.getElementById("book-form");
+    form.elements["bookId"].value = book.id;
+    form.elements["title"].value = book.title;
+    form.elements["author"].value = book.author;
+    form.elements["year"].value = book.year;
+    form.elements["description"].value = book.description || "";
+
+    this.showModal("book-modal");
+  }
+
+  async deleteBook(bookId) {
+    if (
+      confirm(
+        "Are you sure you want to delete this book? All reviews will also be deleted."
+      )
+    ) {
+      try {
+        await this.api.deleteBook(bookId);
+        const books = this.state
+          .get("books")
+          .filter((book) => book.id !== bookId);
+        this.state.set("books", books);
+      } catch (error) {
+        alert(`Failed to delete book: ${error.message}`);
+      }
     }
   }
 }

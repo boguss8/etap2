@@ -29,8 +29,8 @@ body {
 }
 
 #reviews-section .modal-content {
-    max-height: 80vh;
-    overflow-y: auto;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .book-card {
@@ -51,11 +51,11 @@ body {
 }
 
 #reviews-list {
-    margin: 20px 0;
+  margin: 20px 0;
 }
 
 #reviews-section h2 {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .rating {
@@ -78,4 +78,34 @@ textarea {
 button {
   padding: 8px 16px;
   cursor: pointer;
+}
+
+.review-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.review-actions button {
+  padding: 4px 8px;
+  font-size: 0.9em;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.review-actions button:hover {
+  background-color: #e0e0e0;
+}
+
+.book-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.book-actions button {
+  padding: 4px 8px;
+  font-size: 0.9em;
 }
