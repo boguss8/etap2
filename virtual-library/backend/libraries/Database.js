@@ -24,8 +24,14 @@ class Database {
   run(query, params = []) {
     return new Promise((resolve, reject) => {
       this.db.run(query, params, function (error) {
-        if (error) reject(error);
-        resolve({ id: this.lastID, changes: this.changes });
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve({
+          id: this ? this.lastID : undefined,
+          changes: this ? this.changes : 0,
+        });
       });
     });
   }

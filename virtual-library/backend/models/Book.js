@@ -17,11 +17,13 @@ class Book {
         "UPDATE books SET title = ?, author = ?, year = ?, description = ? WHERE id = ?",
         [book.title, book.author, book.year, book.description, book.id]
       );
+    } else {
+      const result = await this.db.run(
+        "INSERT INTO books (title, author, year, description) VALUES (?, ?, ?, ?)",
+        [book.title, book.author, book.year, book.description]
+      );
+      return await this.findById(result.id);
     }
-    return await this.db.run(
-      "INSERT INTO books (title, author, year, description) VALUES (?, ?, ?, ?)",
-      [book.title, book.author, book.year, book.description]
-    );
   }
 
   async delete(id) {

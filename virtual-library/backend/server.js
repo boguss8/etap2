@@ -16,10 +16,20 @@ const router = new Router();
 app.use(express.json());
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   next();
 });
+
+app.use(express.static("frontend"));
 
 // Initialize services
 const database = new Database(initDatabase());
@@ -46,6 +56,11 @@ router.post("/reviews", (req, res) => reviewController.create(req, res));
 router.put("/reviews/:id", (req, res) => reviewController.update(req, res));
 router.delete("/reviews/:id", (req, res) => reviewController.delete(req, res));
 
-app.use(router.middleware());
+app.use("/api", router.middleware());
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Something broke!" });
+});
 
 app.listen(port, () => console.log(`Server running on port ${port}`));

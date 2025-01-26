@@ -22,14 +22,21 @@ class Router {
   }
 
   findHandler(method, path) {
-    const routes = this.routes[method];
-    const exactMatch = routes.get(path);
-    if (exactMatch) return { handler: exactMatch };
+    if (!this.routes[method]) {
+      return null;
+    }
 
-    for (const [routePath, handler] of routes) {
-      const params = this.matchPath(routePath, path);
-      if (params) {
-        return { handler, params };
+    if (this.routes[method].has(path)) {
+      return this.routes[method].get(path);
+    }
+
+    for (let [routePath, handler] of this.routes[method].entries()) {
+      const match = this.matchPath(routePath, path);
+      if (match) {
+        return (req, res) => {
+          req.params = match;
+          return handler(req, res);
+        };
       }
     }
     return null;
@@ -39,12 +46,15 @@ class Router {
     const routeParts = routePath.split("/");
     const requestParts = requestPath.split("/");
 
-    if (routeParts.length !== requestParts.length) return null;
+    if (routeParts.length !== requestParts.length) {
+      return null;
+    }
 
     const params = {};
     for (let i = 0; i < routeParts.length; i++) {
       if (routeParts[i].startsWith(":")) {
-        params[routeParts[i].slice(1)] = requestParts[i];
+        const paramName = routeParts[i].slice(1);
+        params[paramName] = requestParts[i];
       } else if (routeParts[i] !== requestParts[i]) {
         return null;
       }
@@ -54,10 +64,14 @@ class Router {
 
   middleware() {
     return (req, res, next) => {
-      const result = this.findHandler(req.method, req.path);
-      if (result) {
-        req.params = result.params;
-        return result.handler(req, res, next);
+      const method = req.method.toUpperCase();
+      const path = req.path || req.url;
+      if (!this.routes[method]) {
+        return next();
+      }
+      const handler = this.findHandler(method, path);
+      if (handler) {
+        return handler(req, res);
       }
       next();
     };

@@ -29,7 +29,26 @@ class ReviewController {
 
   async create(req, res) {
     try {
-      const result = await this.reviewModel.save(req.body);
+      const required = ["book_id", "user_name", "rating", "content"];
+      for (const field of required) {
+        if (req.body[field] === undefined || req.body[field] === "") {
+          throw new Error(`Missing required field: ${field}`);
+        }
+      }
+
+      const rating = parseInt(req.body.rating);
+      if (isNaN(rating) || rating < 1 || rating > 5) {
+        throw new Error("Rating must be a number between 1 and 5");
+      }
+
+      const reviewData = {
+        book_id: parseInt(req.body.book_id),
+        user_name: req.body.user_name.trim(),
+        rating: rating,
+        content: req.body.content.trim(),
+      };
+
+      const result = await this.reviewModel.save(reviewData);
       res.status(201).json(result);
     } catch (error) {
       res.status(500).json({ error: error.message });
