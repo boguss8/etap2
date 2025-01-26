@@ -128,6 +128,22 @@ class DOMManager {
           alert(`Failed to save review: ${error.message}`);
         }
       });
+
+    document
+      .getElementById("filter-reviews")
+      ?.addEventListener("change", (e) => {
+        const rating = parseInt(e.target.value, 10);
+        const allReviews = this.state.get("currentBookReviews");
+
+        if (rating === 0) {
+          this.renderReviews(allReviews);
+        } else {
+          const filteredReviews = allReviews.filter(
+            (review) => review.rating === rating
+          );
+          this.renderReviews(filteredReviews);
+        }
+      });
   }
 
   showModal(modalId) {
@@ -168,9 +184,9 @@ class DOMManager {
       .join("");
   }
 
-  renderReviews() {
+  renderReviews(reviewsToRender = null) {
     const reviewsList = document.getElementById("reviews-list");
-    const reviews = this.state.get("currentBookReviews");
+    const reviews = reviewsToRender || this.state.get("currentBookReviews");
     if (!reviewsList || !reviews) return;
     if (reviews.length === 0) {
       reviewsList.innerHTML = "<p>No reviews yet</p>";
@@ -179,24 +195,24 @@ class DOMManager {
     reviewsList.innerHTML = reviews
       .map(
         (review) => `
-            <div class="review-card">
-                <div class="rating">${"★".repeat(review.rating)}${"☆".repeat(
+        <div class="review-card">
+            <div class="rating">${"★".repeat(review.rating)}${"☆".repeat(
           5 - review.rating
         )}</div>
-                <p>${review.content}</p>
-                <small>By: ${review.user_name}</small>
-                <div class="review-actions">
-                  <button onclick="domManager.editReview(${JSON.stringify(
-                    review
-                  ).replace(/"/g, "&quot;")})">
-                    Edit
-                  </button>
-                  <button onclick="domManager.deleteReview(${review.id})">
-                    Delete
-                  </button>
-                </div>
+            <p>${review.content}</p>
+            <small>By: ${review.user_name}</small>
+            <div class="review-actions">
+              <button onclick="domManager.editReview(${JSON.stringify(
+                review
+              ).replace(/"/g, "&quot;")})">
+                Edit
+              </button>
+              <button onclick="domManager.deleteReview(${review.id})">
+                Delete
+              </button>
             </div>
-        `
+        </div>
+      `
       )
       .join("");
   }
@@ -206,6 +222,9 @@ class DOMManager {
       const reviews = await this.api.fetchReviews(bookId);
       this.state.set("currentBookId", bookId);
       this.state.set("currentBookReviews", reviews);
+      if (document.getElementById("filter-reviews")) {
+        document.getElementById("filter-reviews").value = "0";
+      }
     } catch (error) {
       console.error("Error fetching reviews:", error);
       alert("Failed to load reviews");

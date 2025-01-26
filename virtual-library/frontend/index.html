@@ -31,6 +31,17 @@
         <section id="reviews-section" class="modal">
           <div class="modal-content">
             <h2>Book Reviews</h2>
+            <div class="review-filters">
+              <label>Filter by rating:</label>
+              <select id="filter-reviews">
+                <option value="0">All ratings</option>
+                <option value="5">5 stars</option>
+                <option value="4">4 stars</option>
+                <option value="3">3 stars</option>
+                <option value="2">2 stars</option>
+                <option value="1">1 star</option>
+              </select>
+            </div>
             <div id="reviews-list"></div>
             <button id="add-review-btn">Add Review</button>
             <button class="close-modal">Close</button>
