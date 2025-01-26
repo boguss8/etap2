@@ -1,0 +1,17 @@
+{
+  "name": "virtual-library",
+  "version": "1.0.0",
+  "description": "Virtual Library Project",
+  "main": "server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

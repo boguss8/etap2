@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Virtual Library</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>Virtual Library</h1>
+      </header>
+
+      <main>
+        <section id="books-section">
+          <h2>Books</h2>
+          <button id="add-book-btn">Add New Book</button>
+          <div class="sort-controls">
+            <label>Sort by:</label>
+            <select id="sort-books">
+              <option value="id">ID</option>
+              <option value="title">Title</option>
+              <option value="author">Author</option>
+              <option value="year">Year</option>
+            </select>
+          </div>
+          <div id="books-list"></div>
+        </section>
+
+        <section id="reviews-section" class="modal">
+          <div class="modal-content">
+            <h2>Book Reviews</h2>
+            <div class="review-filters">
+              <label>Filter by rating:</label>
+              <select id="filter-reviews">
+                <option value="0">All ratings</option>
+                <option value="5">5 stars</option>
+                <option value="4">4 stars</option>
+                <option value="3">3 stars</option>
+                <option value="2">2 stars</option>
+                <option value="1">1 star</option>
+              </select>
+            </div>
+            <div id="reviews-list"></div>
+            <button id="add-review-btn">Add Review</button>
+            <button class="close-modal">Close</button>
+          </div>
+        </section>
+
+        <div id="book-modal" class="modal">
+          <div class="modal-content">
+            <form id="book-form">
+              <input type="hidden" name="bookId" />
+              <input type="text" name="title" placeholder="Title" required />
+              <input type="text" name="author" placeholder="Author" required />
+              <input type="number" name="year" placeholder="Year" required />
+              <textarea name="description" placeholder="Description"></textarea>
+              <button type="submit">Save Book</button>
+              <button type="button" class="close-modal">Cancel</button>
+            </form>
+          </div>
+        </div>
+
+        <div id="review-modal" class="modal">
+          <div class="modal-content">
+            <form id="review-form">
+              <input type="hidden" name="reviewId" />
+              <input type="hidden" name="bookId" />
+              <input
+                type="text"
+                name="reviewer"
+                placeholder="Your Name"
+                required
+              />
+              <select name="rating" required>
+                <option value="">Select Rating</option>
+                <option value="1">1 Star</option>
+                <option value="2">2 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="5">5 Stars</option>
+              </select>
+              <textarea
+                name="content"
+                placeholder="Your Review"
+                required
+              ></textarea>
+              <button type="submit">Save Review</button>
+              <button type="button" class="close-modal">Cancel</button>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="js/ReactiveState.js"></script>
+    <script src="js/ApiService.js"></script>
+    <script src="js/DOMManager.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
